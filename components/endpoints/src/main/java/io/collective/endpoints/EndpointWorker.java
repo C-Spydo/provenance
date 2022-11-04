@@ -43,17 +43,12 @@ public class EndpointWorker implements Worker<EndpointTask> {
         gateway.clear();
 
         { // todo - map rss results to an article infos collection and save articles infos to the article gateway
-            List<ArticleRecord> records = new ArrayList<>();
             RSS rss = new XmlMapper().readValue(response, RSS.class);
             Channel channel = rss.getChannel();
             Collection<Item> items = channel.getItem();
-
-            int k=14;
             for ( Item item : items )
             {
-                records.add(new ArticleRecord(k,item.getTitle(),true));
                 gateway.save(item.getTitle());
-                k++;
             }
 
 
