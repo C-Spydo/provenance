@@ -1,13 +1,25 @@
 package io.collective.endpoints;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import io.collective.articles.ArticleDataGateway;
+import io.collective.articles.ArticleInfo;
+import io.collective.articles.ArticleRecord;
+import io.collective.articles.ArticlesController;
 import io.collective.restsupport.RestTemplate;
+import io.collective.rss.Channel;
+import io.collective.rss.Item;
+import io.collective.rss.RSS;
 import io.collective.workflow.Worker;
+import org.eclipse.jetty.server.handler.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class EndpointWorker implements Worker<EndpointTask> {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -31,6 +43,19 @@ public class EndpointWorker implements Worker<EndpointTask> {
         gateway.clear();
 
         { // todo - map rss results to an article infos collection and save articles infos to the article gateway
+            List<ArticleRecord> records = new ArrayList<>();
+            RSS rss = new XmlMapper().readValue(response, RSS.class);
+            Channel channel = rss.getChannel();
+            Collection<Item> items = channel.getItem();
+
+            int k=14;
+            for ( Item item : items )
+            {
+                records.add(new ArticleRecord(k,item.getTitle(),true));
+                gateway.save(item.getTitle());
+                k++;
+            }
+
 
         }
     }

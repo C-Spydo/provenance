@@ -30,18 +30,7 @@ public class ArticlesController extends BasicHandler {
                 for (ArticleRecord a : articles) {
                     infos.add(new ArticleInfo(a.getId(), a.getTitle()));
                 }
-                try {
-                    PrintWriter out = servletResponse.getWriter();
-                    servletResponse.setContentType("application/json");
-                    servletResponse.setCharacterEncoding("UTF-8");
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                    String json = mapper.writeValueAsString(infos);
-                    out.print(json);
-                    out.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                writeJsonBody(servletResponse, infos);
             }
         });
 
@@ -53,19 +42,7 @@ public class ArticlesController extends BasicHandler {
                 for (ArticleRecord a : articles) {
                     infos.add(new ArticleInfo(a.getId(), a.getTitle()));
                 }
-
-                try {
-                    PrintWriter out = servletResponse.getWriter();
-                    servletResponse.setContentType("application/json");
-                    servletResponse.setCharacterEncoding("UTF-8");
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                    String json = mapper.writeValueAsString(infos);
-                    out.print(json);
-                    out.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                writeJsonBody(servletResponse, infos);
             }
         });
     }
