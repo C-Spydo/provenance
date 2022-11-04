@@ -1,11 +1,15 @@
 package io.collective.articles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.collective.restsupport.BasicHandler;
 import org.eclipse.jetty.server.Request;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArticlesController extends BasicHandler {
@@ -21,14 +25,47 @@ public class ArticlesController extends BasicHandler {
         get("/articles", List.of("application/json", "text/html"), request, servletResponse, () -> {
 
             { // todo - query the articles gateway for *all* articles, map record to infos, and send back a collection of article infos
-
+                List<ArticleRecord> articles = gateway.findAll();
+                List<ArticleInfo> infos = new ArrayList<>();
+                for (ArticleRecord a : articles) {
+                    infos.add(new ArticleInfo(a.getId(), a.getTitle()));
+                }
+                try {
+                    PrintWriter out = servletResponse.getWriter();
+                    servletResponse.setContentType("application/json");
+                    servletResponse.setCharacterEncoding("UTF-8");
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                    String json = mapper.writeValueAsString(infos);
+                    out.print(json);
+                    out.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
         get("/available", List.of("application/json"), request, servletResponse, () -> {
 
             { // todo - query the articles gateway for *available* articles, map records to infos, and send back a collection of article infos
+                List<ArticleRecord> articles = gateway.findAvailable();
+                List<ArticleInfo> infos = new ArrayList<>();
+                for (ArticleRecord a : articles) {
+                    infos.add(new ArticleInfo(a.getId(), a.getTitle()));
+                }
 
+                try {
+                    PrintWriter out = servletResponse.getWriter();
+                    servletResponse.setContentType("application/json");
+                    servletResponse.setCharacterEncoding("UTF-8");
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                    String json = mapper.writeValueAsString(infos);
+                    out.print(json);
+                    out.flush();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }

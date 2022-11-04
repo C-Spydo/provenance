@@ -50,6 +50,7 @@ public class ArticlesControllerTest {
     public void findAll() throws IOException {
         RestTemplate template = new RestTemplate();
         String response = template.get("http://localhost:8888/articles", "application/json");
+        System.out.println(response);
         List<ArticleInfo> entries = new ObjectMapper().readValue(response, new TypeReference<List<ArticleInfo>>() {
         });
         assertEquals(6, entries.size());
